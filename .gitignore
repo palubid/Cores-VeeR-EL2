@@ -20,3 +20,5 @@ verilator-cocotb-build
 *.dat
 *.xml
 *.json
+run*
+third_party/picolibc/build

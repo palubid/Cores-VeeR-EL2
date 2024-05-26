@@ -37,7 +37,7 @@ VLOG = qverilog
 VERILATOR = verilator
 RIVIERA = riviera
 GCC_PREFIX = riscv64-unknown-elf
-BUILD_DIR = snapshots/${snapshot}
+BUILD_DIR = ${RV_ROOT}/snapshots/${snapshot}
 TBDIR = ${RV_ROOT}/testbench
 PICOLIBC_DIR = ${RV_ROOT}/third_party/picolibc/install
 
@@ -95,7 +95,12 @@ ifdef debug
  IRUN_DEBUG_RUN = -input ${RV_ROOT}/testbench/input.tcl
  VCS_DEBUG = -debug_access
  VERILATOR_DEBUG = --trace
- RIVIERA_DEBUG = +access +r
+ QUESTA_DEBUG = +acc=rnp -debugdb +access +r
+ QUESTA_GUI = -gui
+ QUESTA_RUN = "${RV_ROOT}/tools/questa_waves.tcl"
+else
+ QUESTA_GUI = -c
+ QUESTA_RUN = "run -all; exit"
 endif
 
 ifdef assert
@@ -136,7 +141,7 @@ all: clean verilator
 clean:
 	rm -rf *.log *.s *.hex *.dis *.tbl irun* vcs* simv* *.map snapshots veer* \
 	verilator* *.exe obj* *.o *.sym ucli.key vc_hdrs.h csrc *.csv work \
-	dataset.asdb library.cfg vsimsa.cfg riviera-build wave.asdb
+	dataset.asdb library.cfg vsimsa.cfg questa-build wave.asdb
 
 
 
@@ -173,17 +178,20 @@ irun-build: ${TBFILES} ${BUILD_DIR}/defines.h
 	  -I${RV_ROOT}/testbench -elaborate  -snapshot ${snapshot} $(profile)
 	touch irun-build
 
-riviera-build: ${TBFILES} ${BUILD_DIR}/defines.h
+questa-build: ${TBFILES} ${BUILD_DIR}/defines.h
 	vlib work
-	vlog -work work ${ASSERT_DEFINES} \
+	vlog -work work -sv -mfcu \
+		-suppress 14408 -suppress 3999 -suppress 13314 -suppress 2583 -suppress 2241\
+		${ASSERT_DEFINES} \
 		+incdir+${RV_ROOT}/design/lib \
 		+incdir+${RV_ROOT}/design/include \
 		+incdir+${BUILD_DIR} \
 		-y ${RV_ROOT}/design/lib +libext+.v+.vh \
 		$(defines) \
 		-f ${RV_ROOT}/testbench/flist \
-		${TBFILES}
-	touch riviera-build
+		${TBFILES} -l questa-build.log
+	vopt tb_top ${QUESTA_DEBUG} -o tb_top_opt
+	touch questa-build
 
 ############ TEST Simulation ###############################
 
@@ -211,8 +219,9 @@ vlog: program.hex ${TBFILES} ${BUILD_DIR}/defines.h
 	$(VLOG) -l vlog.log -sv -mfcu +incdir+${BUILD_DIR}+${RV_ROOT}/design/include+${RV_ROOT}/design/lib \
         $(ASSERT_DEFINES) $(defines) -f ${RV_ROOT}/testbench/flist ${TBFILES} -R +nowarn3829 +nowarn2583 ${DEBUG_PLUS}
 
-riviera: program.hex riviera-build
-	vsim -c -lib work ${DEBUG_PLUS} ${RIVIERA_DEBUG} tb_top -do "run -all; exit" -l riviera.log
+questa: program.hex questa-build
+	vsim ${QUESTA_GUI} -suppress 14408 -suppress 3999 -suppress 3839 -suppress 16154 -suppress 3829 -suppress 3015 -suppress 3837\
+		-lib work ${DEBUG_PLUS} ${QUESTA_DEBUG} tb_top_opt -do ${QUESTA_RUN} -l riviera.log
 
 
 
