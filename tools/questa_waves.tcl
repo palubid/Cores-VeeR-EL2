@@ -16,4 +16,4 @@ add wave sim:/tb_top/rvtop_wrapper/rvtop/veer/ifu/ic_rd_data
 add wave sim:/tb_top/rvtop_wrapper/rvtop/veer/ifu/mem_ctl/ic_rd_hit[0]
 add wave sim:/tb_top/rvtop_wrapper/rvtop/veer/ifu/mem_ctl/ic_rd_hit[1]
 add wave sim:/tb_top/rvtop_wrapper/rvtop/mem/icache/icm/ic_tag_inst/ic_rw_addr_ff
-run 200ns
+run -all

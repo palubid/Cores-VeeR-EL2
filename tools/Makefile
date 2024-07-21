@@ -221,7 +221,7 @@ vlog: program.hex ${TBFILES} ${BUILD_DIR}/defines.h
 
 questa: program.hex questa-build
 	vsim ${QUESTA_GUI} -suppress 14408 -suppress 3999 -suppress 3839 -suppress 16154 -suppress 3829 -suppress 3015 -suppress 3837\
-		-lib work ${DEBUG_PLUS} ${QUESTA_DEBUG} tb_top_opt -do ${QUESTA_RUN} -l riviera.log
+		-lib work ${DEBUG_PLUS} ${QUESTA_DEBUG} tb_top_opt -do ${QUESTA_RUN} -l questa.log
 
 
 
