@@ -181,7 +181,7 @@ irun-build: ${TBFILES} ${BUILD_DIR}/defines.h
 questa-build: ${TBFILES} ${BUILD_DIR}/defines.h
 	vlib work
 	vlog -work work -sv -mfcu \
-		-suppress 14408 -suppress 3999 -suppress 13314 -suppress 2583 -suppress 2241\
+		-suppress 14408 -suppress 3999 -suppress 13314 -suppress 2583 -suppress 2241 -suppress 7045 \
 		${ASSERT_DEFINES} \
 		+incdir+${RV_ROOT}/design/lib \
 		+incdir+${RV_ROOT}/design/include \
@@ -219,7 +219,7 @@ vlog: program.hex ${TBFILES} ${BUILD_DIR}/defines.h
 	$(VLOG) -l vlog.log -sv -mfcu +incdir+${BUILD_DIR}+${RV_ROOT}/design/include+${RV_ROOT}/design/lib \
         $(ASSERT_DEFINES) $(defines) -f ${RV_ROOT}/testbench/flist ${TBFILES} -R +nowarn3829 +nowarn2583 ${DEBUG_PLUS}
 
-questa: program.hex questa-build
+questa-run: program.hex questa-build
 	vsim ${QUESTA_GUI} -suppress 14408 -suppress 3999 -suppress 3839 -suppress 16154 -suppress 3829 -suppress 3015 -suppress 3837\
 		-lib work ${DEBUG_PLUS} ${QUESTA_DEBUG} tb_top_opt -do ${QUESTA_RUN} -l questa.log
 
