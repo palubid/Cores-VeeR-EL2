@@ -1,5 +1,9 @@
+// csr_mstatus.c - Test program to read and write mstatus CSR to check MPP field
+
+// Declare the printf function
 #include "printf.h"
 
+// Macros to read and write CSRs
 #define read_csr(csr) ({ \
     unsigned long res; \
     asm volatile ("csrr %0, " #csr : "=r"(res)); \
@@ -10,8 +14,10 @@
     asm volatile ("csrw " #csr ", %0" : : "r"(val)); \
 }
 
+// CSR addresses
 #define MISA_U (1 << 20)
 
+// main function
 int main () {
     printf("hello\n");
     // The test requires user mode support
