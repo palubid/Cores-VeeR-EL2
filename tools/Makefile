@@ -95,9 +95,10 @@ ifdef debug
  IRUN_DEBUG_RUN = -input ${RV_ROOT}/testbench/input.tcl
  VCS_DEBUG = -debug_access
  VERILATOR_DEBUG = --trace
- QUESTA_DEBUG = +acc=rnp -debugdb +access +r
+ QUESTA_SIM_DEBUG = -debugdb
+ QUESTA_VOPT_DEBUG = +acc=rnp -debugdb
  QUESTA_GUI = -gui
- QUESTA_RUN = "${RV_ROOT}/tools/questa_waves.tcl"
+ QUESTA_RUN = "${RV_ROOT}/tools/questa_tcl/questa_run.tcl"
 else
  QUESTA_GUI = -c
  QUESTA_RUN = "run -all; exit"
@@ -197,9 +198,8 @@ questa-build: ${TBFILES} ${BUILD_DIR}/defines.h
 		-l questa-build.log
 	vopt \
 		tb_top \
-		${QUESTA_DEBUG} \
-		-o tb_top_opt \
-		-l questa-opt.log
+		${QUESTA_VOPT_DEBUG} \
+		-o tb_top_opt
 	touch questa-build
 
 ############ TEST Simulation ###############################
@@ -229,8 +229,15 @@ vlog: program.hex ${TBFILES} ${BUILD_DIR}/defines.h
         $(ASSERT_DEFINES) $(defines) -f ${RV_ROOT}/testbench/flist ${TBFILES} -R +nowarn3829 +nowarn2583 ${DEBUG_PLUS}
 
 questa-run: program.hex questa-build
-	vsim ${QUESTA_GUI} -suppress 14408 -suppress 3999 -suppress 3839 -suppress 16154 -suppress 3829 -suppress 3015 -suppress 3837\
-		-lib work ${DEBUG_PLUS} ${QUESTA_DEBUG} tb_top_opt -do ${QUESTA_RUN} -l questa.log
+	vsim \
+		${QUESTA_GUI} \
+		-suppress 14408 -suppress 3999 -suppress 3839 -suppress 16154 -suppress 3829 -suppress 3015 -suppress 3837\
+		-lib work \
+		${DEBUG_PLUS} \
+		${QUESTA_SIM_DEBUG} \
+		-do ${QUESTA_RUN} \
+		-l questa-run.log \
+		tb_top_opt
 
 
 

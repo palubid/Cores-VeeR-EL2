@@ -1,0 +1,2 @@
+OFILES = crt0.o csr_mstatus.o printf.o
+TEST_CFLAGS = -Os -static -ffreestanding

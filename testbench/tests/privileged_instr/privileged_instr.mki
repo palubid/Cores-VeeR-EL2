@@ -1,0 +1,2 @@
+OFILES = crt0.o privileged_instr.o printf.o
+TEST_CFLAGS = -Os -static -ffreestanding
