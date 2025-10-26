@@ -141,7 +141,8 @@ all: clean verilator
 clean:
 	rm -rf *.log *.s *.hex *.dis *.tbl irun* vcs* simv* *.map snapshots veer* \
 	verilator* *.exe obj* *.o *.sym ucli.key vc_hdrs.h csrc *.csv work \
-	dataset.asdb library.cfg vsimsa.cfg questa-build wave.asdb
+	dataset.asdb library.cfg vsimsa.cfg questa-build wave.asdb \
+	*.vcd *.dbg *.wlf
 
 
 
@@ -180,7 +181,10 @@ irun-build: ${TBFILES} ${BUILD_DIR}/defines.h
 
 questa-build: ${TBFILES} ${BUILD_DIR}/defines.h
 	vlib work
-	vlog -work work -sv -mfcu \
+	vlog \
+		-work work \
+		-sv \
+		-mfcu \
 		-suppress 14408 -suppress 3999 -suppress 13314 -suppress 2583 -suppress 2241 -suppress 7045 \
 		${ASSERT_DEFINES} \
 		+incdir+${RV_ROOT}/design/lib \
@@ -189,8 +193,13 @@ questa-build: ${TBFILES} ${BUILD_DIR}/defines.h
 		-y ${RV_ROOT}/design/lib +libext+.v+.vh \
 		$(defines) \
 		-f ${RV_ROOT}/testbench/flist \
-		${TBFILES} -l questa-build.log
-	vopt tb_top ${QUESTA_DEBUG} -o tb_top_opt
+		${TBFILES} \
+		-l questa-build.log
+	vopt \
+		tb_top \
+		${QUESTA_DEBUG} \
+		-o tb_top_opt \
+		-l questa-opt.log
 	touch questa-build
 
 ############ TEST Simulation ###############################
